@@ -1,6 +1,37 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+const multer = require('multer');
 const { pool } = require('../config/database');
+
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, '..', 'public', 'obras'),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext)
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '');
+    cb(null, `${base}_${Date.now()}${ext}`);
+  },
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Solo se permiten imágenes'));
+    }
+    cb(null, true);
+  },
+});
+
+// POST subir imagen de obra
+router.post('/upload', upload.single('imagen'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo' });
+  const url = `${req.protocol}://${req.get('host')}/static/obras/${req.file.filename}`;
+  res.json({ url });
+});
 
 // GET todas las obras (incluye ferias vinculadas)
 router.get('/', async (req, res) => {

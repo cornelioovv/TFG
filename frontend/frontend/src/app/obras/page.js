@@ -57,6 +57,63 @@ const EMPTY_EDIT_FORM = {
   imagen_url: '',
 };
 
+function ImageDropZone({ onUpload, disabled }) {
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [filename, setFilename] = useState(null);
+
+  const handleFile = async (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setUploading(true);
+    setFilename(file.name);
+    try {
+      const fd = new FormData();
+      fd.append('imagen', file);
+      const res = await axios.post(`${API_URL}/api/obras/upload`, fd);
+      onUpload(res.data.url);
+    } catch {
+      setFilename(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div
+      className={`${styles.dropZone} ${dragging ? styles.dropZoneActive : ''}`}
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragging(false);
+        handleFile(e.dataTransfer.files[0]);
+      }}
+      onClick={() => !disabled && !uploading && document.getElementById('imageFileInput').click()}
+    >
+      <input
+        id="imageFileInput"
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={(e) => handleFile(e.target.files[0])}
+        disabled={disabled || uploading}
+      />
+      {uploading ? (
+        <>
+          <Spinner size="sm" animation="border" className="me-2" />
+          Subiendo…
+        </>
+      ) : (
+        <>
+          <i className={`bi bi-cloud-arrow-up ${styles.dropZoneIcon}`} />
+          Arrastra una imagen o haz clic para seleccionar
+          {filename && <div className={styles.dropZoneFilename}>{filename}</div>}
+        </>
+      )}
+    </div>
+  );
+}
+
 function formatPrecio(precio) {
   if (precio == null) return '—';
   const num = typeof precio === 'string' ? parseFloat(precio) : precio;
@@ -893,14 +950,9 @@ export default function ObrasPage() {
                   </Col>
                 </Row>
                 <Form.Group>
-                  <Form.Label className={styles.detailLabel}>URL de imagen</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="http://localhost:3000/static/obras/..."
-                    value={createForm.imagen_url}
-                    onChange={(e) =>
-                      setCreateForm((p) => ({ ...p, imagen_url: e.target.value }))
-                    }
+                  <Form.Label className={styles.detailLabel}>Imagen</Form.Label>
+                  <ImageDropZone
+                    onUpload={(url) => setCreateForm((p) => ({ ...p, imagen_url: url }))}
                     disabled={submittingCreate}
                   />
                 </Form.Group>

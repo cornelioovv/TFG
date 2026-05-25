@@ -7,76 +7,49 @@ const { pool } = require('./database');
  */
 const OBRAS_SEED = [
   {
+    titulo: 'Retrato Desquiciado',
+    autor: 'Calamardo',
+    descripcion: 'Interpretación contemporánea de un retrato clásico de Calamardo algo desquiciado',
+    precio: 4200.00,
+    anio: 2024,
+    dimensiones: '90x70 cm',
+    imagen_url: 'http://localhost:3000/static/obras/calamardo.jpg',
+  },
+  {
     titulo: 'La Gioconda',
     autor: 'Leonardo da Vinci',
-    descripcion:
-      'Retrato de Lisa Gherardini, célebre por su sonrisa enigmática y la técnica del sfumato.',
-    precio: 850000000,
+    descripcion: 'Retrato de Lisa Gherardini, célebre por su sonrisa enigmática y la técnica del sfumato.',
+    precio: 85000.00,
     anio: 1503,
     dimensiones: '77 x 53 cm',
+    imagen_url: 'http://localhost:3000/static/obras/la_gioconda.jpg',
   },
   {
     titulo: 'La noche estrellada',
     autor: 'Vincent van Gogh',
-    descripcion:
-      'Vista nocturna desde la ventana del sanatorio de Saint-Rémy-de-Provence.',
-    precio: 100000000,
+    descripcion: 'Vista nocturna desde la ventana del sanatorio de Saint-Rémy-de-Provence.',
+    precio: 10000.00,
     anio: 1889,
     dimensiones: '73.7 x 92.1 cm',
+    imagen_url: 'http://localhost:3000/static/obras/noche_estrellada.jpg',
   },
   {
     titulo: 'El grito',
     autor: 'Edvard Munch',
-    descripcion:
-      'Icónica representación de la angustia existencial moderna.',
-    precio: 120000000,
+    descripcion: 'Icónica representación de la angustia existencial moderna.',
+    precio: 12000.00,
     anio: 1893,
     dimensiones: '91 x 73.5 cm',
+    imagen_url: 'http://localhost:3000/static/obras/el_grito.jpg',
   },
   {
     titulo: 'La persistencia de la memoria',
     autor: 'Salvador Dalí',
-    descripcion:
-      'Surrealismo onírico con relojes blandos sobre un paisaje de Cadaqués.',
-    precio: 150000000,
+    descripcion: 'Surrealismo onírico con relojes blandos sobre un paisaje de Cadaqués.',
+    precio: 12500.00,
     anio: 1931,
     dimensiones: '24 x 33 cm',
-  },
-  {
-    titulo: 'Las Meninas',
-    autor: 'Diego Velázquez',
-    descripcion:
-      'Retrato de la familia real española en el Alcázar de Madrid.',
-    precio: 3000000000,
-    anio: 1656,
-    dimensiones: '318 x 276 cm',
-  },
-  {
-    titulo: 'Guernica',
-    autor: 'Pablo Picasso',
-    descripcion:
-      'Mural antibélico encargado para la Exposición Internacional de París.',
-    precio: 200000000,
-    anio: 1937,
-    dimensiones: '349 x 776 cm',
-  },
-  {
-    titulo: 'El nacimiento de Venus',
-    autor: 'Sandro Botticelli',
-    descripcion:
-      'Representación mitológica de Venus emergiendo del mar sobre una concha.',
-    precio: 500000000,
-    anio: 1485,
-    dimensiones: '172.5 x 278.5 cm',
-  },
-  {
-    titulo: 'Composición VIII',
-    autor: 'Wassily Kandinsky',
-    descripcion:
-      'Abstracción geométrica de formas y colores; piedra angular del arte abstracto.',
-    precio: 80000000,
-    anio: 1923,
-    dimensiones: '140 x 201 cm',
+    imagen_url: 'http://localhost:3000/static/obras/persistencia_del_tiempo.jpg',
   },
 ];
 
@@ -110,9 +83,9 @@ async function seedDataIfEmpty() {
     console.log(`[DB] Insertando ${OBRAS_SEED.length} obras de ejemplo...`);
     for (const o of OBRAS_SEED) {
       await pool.query(
-        `INSERT INTO obras (titulo, autor, descripcion, precio, anio, dimensiones)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [o.titulo, o.autor, o.descripcion, o.precio, o.anio, o.dimensiones]
+        `INSERT INTO obras (titulo, autor, descripcion, precio, anio, dimensiones, imagen_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [o.titulo, o.autor, o.descripcion, o.precio, o.anio, o.dimensiones, o.imagen_url || null]
       );
     }
     console.log('[DB] Obras de ejemplo insertadas');

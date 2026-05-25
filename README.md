@@ -1,4 +1,4 @@
-# TFG — Prototipo de metaverso sobre gemelo digital de feria de arte
+# TFG - Prototipo de metaverso sobre gemelo digital de feria de arte
 
 Prototipo de metaverso desarrollado en Unity que actúa como gemelo digital de una feria física de arte plástico. Tres clientes (web admin, Unity, y un futuro microcontrolador ESP32 con LED RGB) comparten estado en tiempo real vía un broker MQTT.
 
@@ -30,8 +30,8 @@ Backend Express expone una API REST contra PostgreSQL para CRUD de obras, ventas
 
 - **Node.js >= 20** ([nodejs.org](https://nodejs.org))
 - **PostgreSQL 14+** ([postgresql.org](https://www.postgresql.org/download/))
-- **Docker Desktop** ([docker.com](https://www.docker.com/products/docker-desktop/)) — para el broker MQTT
-- **Unity Hub + Unity 6** ([unity.com](https://unity.com/download)) — solo si quieres explorar el cliente 3D
+- **Docker Desktop** ([docker.com](https://www.docker.com/products/docker-desktop/)) - para el broker MQTT
+- **Unity Hub + Unity 6** ([unity.com](https://unity.com/download)) - para el cliente 3D
 
 ---
 
@@ -40,7 +40,7 @@ Backend Express expone una API REST contra PostgreSQL para CRUD de obras, ventas
 ### 1. Clonar e instalar dependencias
 
 ```bash
-git clone <url-del-repo>
+git clone https://github.com/cornelioovv/TFG
 cd TFG
 npm install
 ```
@@ -89,7 +89,29 @@ Concurrently lanza ambos servicios en paralelo:
 
 Ctrl+C para los dos.
 
-### 6. (Opcional) Cliente Unity
+### 6. Ejecutar todo con Docker
+
+Si tu tutor prefiere probar el proyecto sin instalar Node.js ni PostgreSQL localmente, usa Docker.
+
+```bash
+docker compose up --build
+```
+
+Esto levanta:
+- **PostgreSQL** en el contenedor `database`
+- **Mosquitto MQTT** en `mqtt`
+- **Backend Express** en http://localhost:3000
+- **Frontend Next.js** en http://localhost:3001
+
+Para detenerlo:
+
+```bash
+docker compose down
+```
+
+> El backend crea las tablas y genera datos semilla automáticamente en el primer arranque.
+
+### 7. (Opcional) Cliente Unity
 
 1. Abre `unity/MetaversoTFG/` desde Unity Hub.
 2. Espera a que importe los assets (puede tardar la primera vez).

@@ -80,7 +80,11 @@ docker compose down
 
 ```bash
 git clone https://github.com/cornelioovv/TFG
+```
+```bash
 cd TFG
+```
+``` bash
 npm install
 ```
 
@@ -92,11 +96,11 @@ npm install
 createdb -U postgres metaverso_tfg
 ```
 
-Solo hay que crear la BD vacía. El backend aplica el schema y carga los datos de ejemplo automáticamente al arrancar, usando `CREATE TABLE IF NOT EXISTS` - no hay migraciones manuales.
+Solo hay que crear la base de datos vacía. El backend aplica el schema y carga los datos de ejemplo automáticamente al arrancar, usando `CREATE TABLE IF NOT EXISTS`.
 
 #### 3. Configurar las variables de entorno del backend
 
-Crea el fichero `backend/api/.env` con tus credenciales de PostgreSQL:
+Duplica el archivo `backend/api/.env.example`, introduce tus credenciales de PostgreSQL y luego borra el `.example` del nombre del archivo, dejándolo como `.env` a secas:
 
 ```env
 DB_USER=postgres
@@ -126,7 +130,7 @@ Concurrently lanza ambos servicios en paralelo:
 - **Backend** → http://localhost:3000
 - **Frontend** → http://localhost:3001
 
-`Ctrl+C` para ambos.
+`Ctrl+C` para parar ambos.
 
 ---
 

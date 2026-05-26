@@ -1,9 +1,9 @@
 # TFG - Prototipo de metaverso sobre gemelo digital de feria de arte
 
-Prototipo de metaverso desarrollado en Unity que actúa como gemelo digital de una feria física de arte plástico. Tres clientes (web admin, Unity, y un futuro microcontrolador ESP32 con LED RGB) comparten estado en tiempo real vía un broker MQTT.
+Prototipo de metaverso desarrollado en Unity que actúa como gemelo digital de una feria física de arte plástico. Tres clientes (web de administración, entorno virtual Unity, y un microcontrolador ESP32 con LED RGB, este último aún en desarrollo) comparten estado en tiempo real a través de MQTT.
 
-**Autor:** Cornelio Velasco Egea
-**Directores:** Enrique García Salcines · Juan Alfonso Lara Torralbo
+**Autor:** Cornelio Velasco Egea  
+**Directores:** Enrique García Salcines · Juan Alfonso Lara Torralbo  
 **Universidad de Córdoba · EPSC**
 
 ---
@@ -20,88 +20,32 @@ Prototipo de metaverso desarrollado en Unity que actúa como gemelo digital de u
 └── package.json          Orquestador raíz (concurrently)
 ```
 
-## Arquitectura en una frase
-
-Backend Express expone una API REST contra PostgreSQL para CRUD de obras, ventas y ferias. Al registrarse una venta, publica un mensaje MQTT en `obras/<id>/vendido`. Los clientes (web admin vía MQTT-over-WebSockets, Unity vía MQTT/TCP, ESP32 idem) están suscritos y reaccionan en vivo.
-
----
-
-## Requisitos previos
-
-- **Node.js >= 20** ([nodejs.org](https://nodejs.org))
-- **PostgreSQL 14+** ([postgresql.org](https://www.postgresql.org/download/))
-- **Docker Desktop** ([docker.com](https://www.docker.com/products/docker-desktop/)) - para el broker MQTT
-- **Unity Hub + Unity 6** ([unity.com](https://unity.com/download)) - para el cliente 3D
-
 ---
 
 ## Puesta en marcha
 
-### 1. Clonar e instalar dependencias
+### Opción A — Docker (recomendado para revisión)
+
+#### Requisitos
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+#### Pasos
 
 ```bash
 git clone https://github.com/cornelioovv/TFG
 cd TFG
-npm install
-```
-
-`npm install` en la raíz, gracias al hook `postinstall`, dispara la instalación de las dependencias del backend y del frontend automáticamente. Una sola orden.
-
-### 2. Configurar la base de datos
-
-Crea solo la base de datos vacía. El backend aplicará el schema automáticamente al arrancar:
-```bash
-createdb metaverso_tfg
-```
-
-Configurar el backend con tus credenciales:
-```bash
-cp backend/api/.env.example backend/api/.env
-# editar backend/api/.env con tu usuario/contraseña de Postgres
-```
-
-> El schema se aplica de forma **idempotente** en cada arranque del backend (lee `docs/Scripts BD/tables_creation.sql` y usa `CREATE TABLE IF NOT EXISTS`). No tienes que ejecutar `psql` ni hacer migraciones manuales.
-
-### 3. Configurar el frontend (opcional)
-
-Los valores por defecto del frontend ya apuntan a `localhost`. Si quieres dejarlo explícito:
-```bash
-cp frontend/frontend/.env.example frontend/frontend/.env.local
-```
-
-### 4. Arrancar el broker MQTT
-
-```bash
-npm run mqtt:up
-```
-
-Esto levanta un contenedor Docker con Mosquitto escuchando en **puerto 1883 (TCP)** y **9001 (WebSockets)**. Para pararlo: `npm run mqtt:down`.
-
-### 5. Arrancar backend + frontend con un solo comando
-
-```bash
-npm run dev
-```
-
-Concurrently lanza ambos servicios en paralelo:
-- **Backend** → http://localhost:3000
-- **Frontend** → http://localhost:3001
-
-Ctrl+C para los dos.
-
-### 6. Ejecutar todo con Docker
-
-Si tu tutor prefiere probar el proyecto sin instalar Node.js ni PostgreSQL localmente, usa Docker.
-
-```bash
 docker compose up --build
 ```
 
-Esto levanta:
-- **PostgreSQL** en el contenedor `database`
-- **Mosquitto MQTT** en `mqtt`
-- **Backend Express** en http://localhost:3000
-- **Frontend Next.js** en http://localhost:3001
+Eso es todo. Docker levanta automáticamente:
+
+- **PostgreSQL** — base de datos
+- **Mosquitto** — broker MQTT (puertos 1883 y 9001)
+- **Backend Express** → http://localhost:3000
+- **Frontend Next.js** → http://localhost:3001
+
+En el primer arranque el backend crea las tablas y carga las obras de ejemplo con sus imágenes. En arranques posteriores no toca nada existente.
 
 Para detenerlo:
 
@@ -109,14 +53,83 @@ Para detenerlo:
 docker compose down
 ```
 
-> El backend crea las tablas y genera datos semilla automáticamente en el primer arranque.
+> Para resetear la base de datos por completo (volver al estado inicial con los datos semilla):
+> ```bash
+> docker compose down -v
+> docker compose up --build
+> ```
 
-### 7. (Opcional) Cliente Unity
+---
 
-1. Abre `unity/MetaversoTFG/` desde Unity Hub.
+### Opción B — Monorepo local (desarrollo)
+
+#### Requisitos
+
+- [Node.js >= 20](https://nodejs.org)
+- [PostgreSQL 14+](https://www.postgresql.org/download/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — solo para el broker MQTT
+
+#### 1. Clonar e instalar dependencias
+
+```bash
+git clone https://github.com/cornelioovv/TFG
+cd TFG
+npm install
+```
+
+`npm install` en la raíz dispara la instalación de las dependencias del backend y del frontend automáticamente mediante el hook `postinstall`.
+
+#### 2. Crear la base de datos
+
+```bash
+createdb -U postgres metaverso_tfg
+```
+
+Solo hay que crear la BD vacía. El backend aplica el schema y carga los datos de ejemplo automáticamente al arrancar, usando `CREATE TABLE IF NOT EXISTS` — no hay migraciones manuales.
+
+#### 3. Configurar las variables de entorno del backend
+
+Crea el fichero `backend/api/.env` con tus credenciales de PostgreSQL:
+
+```env
+DB_USER=postgres
+DB_PASSWORD=tu_contraseña
+DB_HOST=localhost
+DB_NAME=metaverso_tfg
+DB_PORT=5432
+PORT=3000
+```
+
+#### 4. Arrancar el broker MQTT
+
+```bash
+npm run mqtt:up
+```
+
+Levanta un contenedor Docker con Mosquitto en el puerto **1883 (TCP)** y **9001 (WebSockets)**. Para pararlo: `npm run mqtt:down`.
+
+#### 5. Arrancar backend + frontend
+
+```bash
+npm run dev
+```
+
+Concurrently lanza ambos servicios en paralelo:
+
+- **Backend** → http://localhost:3000
+- **Frontend** → http://localhost:3001
+
+`Ctrl+C` para ambos.
+
+---
+
+## Cliente Unity
+
+Funciona con cualquiera de las dos opciones anteriores, siempre que el backend esté corriendo en `localhost:3000`.
+
+1. Abre el proyecto `MetaversoTFG` desde Unity Hub.
 2. Espera a que importe los assets (puede tardar la primera vez).
 3. Abre `Assets/Scenes/SampleScene.unity` y dale a Play.
-4. Asegúrate de tener el backend y el broker corriendo antes.
 
 ---
 
@@ -141,9 +154,9 @@ docker compose down
 Con backend + frontend + broker + Unity corriendo:
 
 1. En el navegador, ve a `http://localhost:3001/obras`.
-2. En Unity, acércate a un cuadro y pulsa **E** o click → modal con detalle.
+2. En Unity, acércate a un cuadro y pulsa **E** o click -> modal con detalle.
 3. Rellena nombre y email del comprador y pulsa "Comprar".
-4. En **menos de un segundo**: la card de la web cambia a "Vendido", el dashboard recalcula KPIs y el LED del cuadro en Unity pasa de verde a rojo.
-5. A la inversa: marca un cuadro como vendido desde la web. Unity refleja el cambio sin recargar nada.
+4. La card de la web cambia a "Vendido", el dashboard recalcula KPIs y el LED del cuadro en Unity pasa de verde a rojo.
+5. También, a la inversa, al marcar un cuadro como vendido desde la web, Unity refleja el cambio sin recargar nada.
 
 Esa sincronización en vivo entre web, mundo virtual (Unity) y (próximamente) hardware físico (LED + ESP32) es el corazón del gemelo digital descrito en el anteproyecto.

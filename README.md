@@ -24,26 +24,33 @@ Prototipo de metaverso desarrollado en Unity que actúa como gemelo digital de u
 
 ## Puesta en marcha
 
-### Opción A — Docker (recomendado para revisión)
+### Opción A - Docker (recomendado para revisión)
 
 #### Requisitos
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-#### Pasos
+#### 3 Pasos:
 
+- Primero
 ```bash
 git clone https://github.com/cornelioovv/TFG
+```
+- Segundo
+```bash
 cd TFG
+```
+- Tercero
+```bash
 docker compose up --build
 ```
 
-Eso es todo. Docker levanta automáticamente:
+Docker levanta automáticamente:
 
-- **PostgreSQL** — base de datos
-- **Mosquitto** — broker MQTT (puertos 1883 y 9001)
-- **Backend Express** → http://localhost:3000
-- **Frontend Next.js** → http://localhost:3001
+- **PostgreSQL** - base de datos
+- **Mosquitto** - broker MQTT (puertos 1883 y 9001)
+- **Backend Express** -> http://localhost:3000
+- **Frontend Next.js** -> http://localhost:3001
 
 En el primer arranque el backend crea las tablas y carga las obras de ejemplo con sus imágenes. En arranques posteriores no toca nada existente.
 
@@ -61,13 +68,13 @@ docker compose down
 
 ---
 
-### Opción B — Monorepo local (desarrollo)
+### Opción B - Monorepo local (desarrollo)
 
 #### Requisitos
 
 - [Node.js >= 20](https://nodejs.org)
 - [PostgreSQL 14+](https://www.postgresql.org/download/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — solo para el broker MQTT
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) - solo para el broker MQTT
 
 #### 1. Clonar e instalar dependencias
 
@@ -85,7 +92,7 @@ npm install
 createdb -U postgres metaverso_tfg
 ```
 
-Solo hay que crear la BD vacía. El backend aplica el schema y carga los datos de ejemplo automáticamente al arrancar, usando `CREATE TABLE IF NOT EXISTS` — no hay migraciones manuales.
+Solo hay que crear la BD vacía. El backend aplica el schema y carga los datos de ejemplo automáticamente al arrancar, usando `CREATE TABLE IF NOT EXISTS` - no hay migraciones manuales.
 
 #### 3. Configurar las variables de entorno del backend
 

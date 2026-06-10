@@ -19,7 +19,7 @@
 #include <Adafruit_SSD1306.h>
 
 // ------------------------------------------------------------
-// CONFIGURACIÓN — edita solo este bloque
+// CONFIGURACIÓN
 // ------------------------------------------------------------
 
 // Wi-Fi
@@ -36,7 +36,7 @@ const char* MQTT_USER     = "";                 // Vacío si no hay auth
 const char* MQTT_PASSWORD = "";
 
 // ID de la obra asignada a este ESP32
-const char* OBRA_ID = "8";
+const char* OBRA_ID = "22"; // La Gioconda
 
 // Pines LED RGB
 const int PIN_R = 13;

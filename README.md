@@ -12,12 +12,12 @@ Prototipo de metaverso desarrollado en Unity que actúa como gemelo digital de u
 
 ```
 .
-├── backend/api/          API REST en Node.js + Express + PostgreSQL
-├── frontend/frontend/    Panel admin en Next.js + React + Bootstrap
-├── unity/MetaversoTFG/   Cliente 3D en Unity 6
-├── infra/mqtt/           Configuración del broker MQTT (Mosquitto)
-├── docs/                 Memoria, anteproyecto y schema SQL
-└── package.json          Orquestador raíz (concurrently)
+|- backend/api/          API REST en Node.js + Express + PostgreSQL
+|- frontend/frontend/    Panel admin en Next.js + React + Bootstrap
+|- unity/MetaversoTFG/   Cliente 3D en Unity 6
+|- infra/mqtt/           Configuración del broker MQTT (Mosquitto)
+|- docs/                 Memoria, anteproyecto y schema SQL
+|- package.json          Orquestador raíz (concurrently)
 ```
 
 ---

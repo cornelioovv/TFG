@@ -1,9 +1,9 @@
 const { pool } = require('./database');
 
 /**
- * Obras de ejemplo para que el revisor pueda probar la funcionalidad
+ * Obras de ejemplo para poder probar la funcionalidad
  * (listado, filtros, modal de detalle, compra...) sin tener que insertar
- * datos manualmente. Sin imagen — los cuadros saldrán con el placeholder.
+ * datos manualmente.
  */
 const OBRAS_SEED = [
   {

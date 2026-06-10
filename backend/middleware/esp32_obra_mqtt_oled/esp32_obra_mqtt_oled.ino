@@ -11,6 +11,7 @@
 // ============================================================
 
 #include <WiFi.h>
+#include <HTTPClient.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <Wire.h>
@@ -24,6 +25,9 @@
 // Wi-Fi
 const char* WIFI_SSID     = "vodafoneAAYF9E";
 const char* WIFI_PASSWORD = "H3sRFXfGCc7T9X7M";
+
+// Backend API (normalmente la misma IP que el broker)
+const char* API_BASE_URL  = "http://192.168.0.197:3000";
 
 // Broker MQTT
 const char* MQTT_BROKER   = "192.168.0.197";   // IP o dominio
@@ -141,15 +145,46 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   if (vendido) {
     obraVendida = true;
     ledRojo();
-    Serial.println("[OBRA] ¡Vendida! LED → ROJO");
+    Serial.println("[OBRA] Vendida. LED -> ROJO");
   } else {
     obraVendida = false;
     ledVerde();
-    Serial.println("[OBRA] Disponible. LED → VERDE");
+    Serial.println("[OBRA] Disponible. LED -> VERDE");
   }
 
   // Actualizar pantalla
   oledMostrarEstado();
+}
+
+// ------------------------------------------------------------
+// Consulta inicial del estado de la obra a la API REST
+// ------------------------------------------------------------
+void consultarEstadoInicial() {
+  char url[128];
+  snprintf(url, sizeof(url), "%s/api/obras/%s", API_BASE_URL, OBRA_ID);
+  Serial.printf("[API] GET %s\n", url);
+  oledMensaje("Consultando API...", url);
+
+  HTTPClient http;
+  http.begin(url);
+  int httpCode = http.GET();
+
+  if (httpCode == 200) {
+    String body = http.getString();
+    StaticJsonDocument<512> doc;
+    DeserializationError err = deserializeJson(doc, body);
+    if (!err) {
+      obraVendida = doc["vendido"] | false;
+      Serial.printf("[API] Estado inicial: %s\n", obraVendida ? "VENDIDA" : "DISPONIBLE");
+    } else {
+      Serial.printf("[API] JSON error: %s\n", err.c_str());
+    }
+  } else {
+    Serial.printf("[API] Error HTTP %d — arrancando como DISPONIBLE\n", httpCode);
+  }
+
+  http.end();
+  obraVendida ? ledRojo() : ledVerde();
 }
 
 // ------------------------------------------------------------
@@ -241,6 +276,10 @@ void setup() {
   Serial.printf("[CONFIG] Obra: %s | Topic: %s\n", OBRA_ID, topicSuscripcion);
 
   conectarWifi();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    consultarEstadoInicial();
+  }
 
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setCallback(mqttCallback);

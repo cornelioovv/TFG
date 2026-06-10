@@ -23,6 +23,9 @@
 *.opendb
 *.VC.db
 
+*.png
+*.svg
+
 # Node.js
 node_modules/
 npm-debug.log*

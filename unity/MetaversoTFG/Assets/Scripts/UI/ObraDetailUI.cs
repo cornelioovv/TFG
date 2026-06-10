@@ -14,6 +14,8 @@ public class ObraDetailUI : MonoBehaviour
     public RawImage imagen;
     public TMP_Text tituloLabel;
     public TMP_Text autorLabel;
+    public TMP_Text anioLabel;
+    public TMP_Text descripcionLabel;
     public TMP_Text precioLabel;
     public TMP_Text estadoLabel;
 
@@ -58,6 +60,8 @@ public class ObraDetailUI : MonoBehaviour
 
         if (tituloLabel != null) tituloLabel.text = obra.titulo;
         if (autorLabel != null) autorLabel.text = obra.artista;
+        if (anioLabel != null) anioLabel.text = obra.anio > 0 ? obra.anio.ToString() : "—";
+        if (descripcionLabel != null) descripcionLabel.text = string.IsNullOrWhiteSpace(obra.descripcion) ? "" : obra.descripcion;
         if (precioLabel != null) precioLabel.text = $"{obra.precio:N0} €";
 
         bool vendida = obra.vendido;

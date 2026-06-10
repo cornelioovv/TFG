@@ -143,6 +143,8 @@ public class ObraSpawner : MonoBehaviour
             data.obraId = obra.id;
             data.titulo = obra.titulo;
             data.artista = obra.autor;
+            data.descripcion = obra.descripcion ?? "";
+            data.anio = obra.anio;
             data.precio = obra.PrecioFloat;
             data.vendido = obra.vendido;
             data.canvasRenderer = canvasTransform ? canvasTransform.GetComponent<MeshRenderer>() : null;

@@ -7,6 +7,8 @@ public class ObraDeArte : MonoBehaviour
     public int obraId = 6;
     public string titulo = "Abstracción Azul";
     public string artista = "María García";
+    public string descripcion = "";
+    public int anio = 0;
     public float precio = 3500f;
     [FormerlySerializedAs("vendida")]
     public bool vendido = false;

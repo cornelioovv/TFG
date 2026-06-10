@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
     public float velocidadMovimiento = 5f;
     public float velocidadRotacion = 2f;
 
-    [Header("C·mara")]
+    [Header("C√°mara")]
     public Transform camaraTransform;
     public float sensibilidadMouse = 100f;
 
@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Si no asignaste la c·mara manualmente, b˙scala
+        // Si no asignaste la c√°mara manualmente, b√°scala
         if (camaraTransform == null)
         {
             camaraTransform = GetComponentInChildren<Camera>().transform;
@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
         float movimientoX = Input.GetAxis("Horizontal"); // A/D
         float movimientoZ = Input.GetAxis("Vertical");   // W/S
 
-        // Calcular direcciÛn de movimiento
+        // Calcular direcci√≥n de movimiento
         Vector3 movimiento = transform.right * movimientoX + transform.forward * movimientoZ;
         movimiento.y = 0; // No volar
 
@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour
         // Rotar jugador horizontalmente
         transform.Rotate(Vector3.up * mouseX);
 
-        // Rotar c·mara verticalmente (con lÌmites)
+        // Rotar c√°mara verticalmente (con l√≠mites)
         rotacionX -= mouseY;
         rotacionX = Mathf.Clamp(rotacionX, -90f, 90f);
 

@@ -216,6 +216,10 @@ void conectarWifi() {
 // Conexión / reconexión MQTT
 // ------------------------------------------------------------
 void conectarMQTT() {
+  char topicStatus[64];
+  snprintf(topicStatus, sizeof(topicStatus), "dispositivos/esp32-%s/status", OBRA_ID);
+  const char* willMsg = "{\"online\":false}";
+
   while (!mqttClient.connected()) {
     ledAzul();
     oledMensaje("Conectando MQTT...", MQTT_BROKER);
@@ -225,11 +229,15 @@ void conectarMQTT() {
                       + String((uint32_t)ESP.getEfuseMac(), HEX);
 
     bool ok = (strlen(MQTT_USER) > 0)
-      ? mqttClient.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD)
-      : mqttClient.connect(clientId.c_str());
+      ? mqttClient.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD,
+                           topicStatus, 1, false, willMsg)
+      : mqttClient.connect(clientId.c_str(),
+                           topicStatus, 1, false, willMsg);
 
     if (ok) {
       Serial.println(" OK");
+      // Publicar presencia online
+      mqttClient.publish(topicStatus, "{\"online\":true}", false);
       mqttClient.subscribe(topicSuscripcion);
       Serial.printf("[MQTT] Suscrito a: %s\n", topicSuscripcion);
 

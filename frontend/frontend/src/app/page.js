@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Row, Col, Spinner, Alert, Badge } from 'react-bootstrap';
 import styles from './page.module.css';
 import { useObrasLive } from '@/hooks/useObrasLive';
+import { onMqttStatus, onEspStatus } from '@/lib/mqttClient';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -64,6 +65,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [apiOnline, setApiOnline] = useState(false);
+  const [mqttOnline, setMqttOnline] = useState(false);
+  const [espOnline, setEspOnline] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,6 +92,12 @@ export default function HomePage() {
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    const unsubMqtt = onMqttStatus(setMqttOnline);
+    const unsubEsp  = onEspStatus(setEspOnline);
+    return () => { unsubMqtt(); unsubEsp(); };
   }, []);
 
   // Sincronización en vivo: cuando entra una venta vía MQTT, refetch ambos
@@ -241,18 +250,15 @@ export default function HomePage() {
         </Col>
       </Row>
 
-      <div className={styles.widget}>
+      <div className={styles.widget} style={{ height: 'auto' }}>
         <div className={styles.widgetHeader}>
           <h2 className={styles.widgetTitle}>Estado del sistema</h2>
         </div>
         <div className={styles.statusGrid}>
           <StatusDot ok={apiOnline} label="API" />
-          <StatusDot ok={false} label="Broker MQTT" />
-          <StatusDot ok={false} label="Microcontrolador" />
+          <StatusDot ok={mqttOnline} label="Broker MQTT" />
+          <StatusDot ok={espOnline} label="Microcontrolador" />
         </div>
-        <p className={styles.statusNote}>
-          MQTT y microcontrolador estarán activos cuando se conecte el hardware del LED.
-        </p>
       </div>
     </>
   );
